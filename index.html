@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aso Protection — Security Platform</title>
+  <link rel="stylesheet" href="/main.css" />
+  <style>
+    :root{
+      --bg:#f4f7fb;--surface:#fff;--surface-soft:#f8fbff;--border:#d9e3ee;--text:#142235;--muted:#66778c;
+      --primary:#0d5bd7;--primary-dark:#0947aa;--success:#1f8a5b;--warning:#b7791f;--danger:#c53b3b;--info:#2563eb;
+      --shadow:0 14px 40px rgba(20,34,53,.08);--radius:18px
+    }
+    *{box-sizing:border-box} html{scroll-behavior:smooth}
+    body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--text);background:
+      radial-gradient(circle at top left, rgba(13,91,215,.05), transparent 22%),
+      linear-gradient(180deg,#fbfdff 0%,var(--bg) 100%);}
+    .hidden{display:none!important} .stack{display:grid;gap:12px}
+    input{width:100%;height:48px;border:1px solid var(--border);border-radius:12px;padding:0 14px;font-size:.95rem;background:#fff;outline:none}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 18px;border-radius:999px;border:1px solid transparent;font-weight:700;font-size:.95rem;cursor:pointer;white-space:nowrap}
+    .btn-primary{background:var(--primary);color:#fff;box-shadow:0 12px 24px rgba(13,91,215,.18)} .btn-primary:hover{background:var(--primary-dark)}
+    .btn-outline{background:#fff;border-color:var(--border);color:var(--text)}
+    .status{min-height:18px;font-size:.9rem;color:var(--muted)}
+    .auth-wrap{min-height:100vh;display:grid;place-items:center;padding:24px}
+    .auth-card{width:min(100%,1080px);display:grid;grid-template-columns:1.08fr .92fr;background:#fff;border:1px solid var(--border);border-radius:24px;overflow:hidden;box-shadow:var(--shadow)}
+    .auth-left{background:linear-gradient(135deg,#0f1b2d,#183152);color:#fff;padding:40px}
+    .auth-left .logo{width:96px;height:96px;border-radius:18px;background:#fff;padding:10px;object-fit:contain;margin-bottom:20px}
+    .auth-left h1{margin:0 0 12px;font-size:2.35rem;line-height:1.06;letter-spacing:-.03em;max-width:12ch}
+    .auth-left p{margin:0;color:#c9d7ea;line-height:1.8;max-width:52ch}
+    .hero-points{margin-top:24px;display:grid;gap:12px}
+    .hero-point{padding:14px 16px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.05);border-radius:14px;color:#dbe7f8;line-height:1.6;font-size:.94rem}
+    .auth-right{padding:40px;display:grid;align-content:center}
+    .tabs{display:flex;gap:8px;margin-bottom:18px}
+    .tab{flex:1;height:44px;border-radius:999px;border:1px solid var(--border);background:#fff;cursor:pointer;font-weight:700;font-size:.95rem}
+    .tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+    .app{display:grid;grid-template-columns:280px 1fr;min-height:100vh}
+    .sidebar{background:#0f1b2d;color:#eaf1fb;padding:24px 18px;border-right:1px solid rgba(255,255,255,.06);position:sticky;top:0;height:100vh}
+    .brand{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+    .brand img{width:60px;height:60px;object-fit:contain;border-radius:14px;background:#fff;padding:6px}
+    .brand strong{display:block;color:#fff;font-size:1.12rem}.brand span{font-size:.82rem;color:#a8bad3}
+    .nav{display:grid;gap:8px}
+    .nav a{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:12px;color:#d8e4f4;font-size:.95rem;cursor:pointer}
+    .nav a.active,.nav a:hover{background:rgba(255,255,255,.08);color:#fff}.nav-dot{width:8px;height:8px;border-radius:50%;background:#4aa3ff}
+    .sidebar-box{margin-top:26px;padding:16px;border-radius:16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08)}
+    .sidebar-box h4{margin:0 0 8px;color:#fff;font-size:.95rem}.sidebar-box p{margin:0;color:#b7c7da;font-size:.85rem;line-height:1.6}
+    .main{padding:28px}.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:22px;flex-wrap:wrap}
+    .topbar h1{margin:0;font-size:2rem;letter-spacing:-.03em}.topbar p{margin:6px 0 0;color:var(--muted);line-height:1.6}
+    .top-actions{display:flex;gap:12px;flex-wrap:wrap}.grid{display:grid;gap:18px}.grid-4{grid-template-columns:repeat(4,1fr)}.grid-2{grid-template-columns:repeat(2,1fr)}
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}.card-pad{padding:22px}
+    .metric small{display:block;color:var(--muted);font-size:.84rem;margin-bottom:8px}.metric strong{display:block;font-size:1.95rem;letter-spacing:-.03em;margin-bottom:8px}.metric span{color:var(--muted);line-height:1.55;font-size:.92rem}
+    .status-line{display:flex;align-items:center;gap:8px;font-size:.88rem;margin-top:10px;color:var(--muted)} .dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+    .success{background:var(--success)} .warning{background:var(--warning)} .danger{background:var(--danger)} .info{background:var(--info)}
+    .section-title{margin:0 0 8px;font-size:1.2rem;letter-spacing:-.02em}.muted{color:var(--muted);line-height:1.65;font-size:.94rem}
+    .keys-box{display:grid;gap:12px;margin-top:14px}.key-field{background:var(--surface-soft);border:1px solid var(--border);border-radius:14px;padding:14px}
+    .key-field label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+    .key-value{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.92rem;word-break:break-all;line-height:1.6}
+    .install-box{background:#0f1724;color:#dfe8f6;border-radius:16px;padding:16px;overflow:auto;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.86rem;line-height:1.65;white-space:pre-wrap}
+    .feature-list{display:grid;gap:10px;margin-top:12px}.feature-row{display:flex;justify-content:space-between;align-items:center;gap:12px;border:1px solid var(--border);border-radius:12px;padding:12px 14px;background:var(--surface-soft)}
+    .badge{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:999px;font-size:.78rem;font-weight:700;white-space:nowrap}
+    .badge-success{background:rgba(31,138,91,.1);color:var(--success)} .badge-warning{background:rgba(183,121,31,.12);color:var(--warning)} .badge-danger{background:rgba(197,59,59,.11);color:var(--danger)} .badge-info{background:rgba(13,91,215,.1);color:var(--primary)}
+    table{width:100%;border-collapse:collapse;font-size:.94rem} th,td{padding:14px 0;text-align:left;border-bottom:1px solid var(--border);vertical-align:top} th{color:var(--muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+    .list{display:grid;gap:12px}.list-item{padding:14px 16px;border:1px solid var(--border);border-radius:14px;background:var(--surface-soft)}
+    .list-top{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px;flex-wrap:wrap}.list-title{font-weight:700;font-size:.95rem}.list-item p{margin:0;color:var(--muted);line-height:1.6;font-size:.9rem}
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.48);display:none;place-items:center;z-index:999;padding:16px}.overlay.open{display:grid}
+    .captcha-modal{width:min(100%,470px);background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 20px 80px rgba(0,0,0,.2);border:1px solid #e5ebf2}
+    .captcha-head{padding:16px 18px;border-bottom:1px solid #e8edf3;display:flex;justify-content:space-between;align-items:center;gap:12px}.captcha-body{padding:18px}
+    .rc-anchor{width:100%;background:#fff;border:1px solid #d3d3d3;border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.05);overflow:hidden}
+    .rc-anchor-content{display:flex;align-items:center;min-height:76px;padding:0 14px}.rc-inline-block{display:inline-block}.rc-anchor-center-container{display:flex;align-items:center;min-height:76px}.rc-anchor-center-item{display:flex;align-items:center}.rc-anchor-checkbox-holder{width:38px;justify-content:center}
+    .recaptcha-checkbox{width:28px;height:28px;position:relative;display:inline-block;cursor:pointer;outline:none}
+    .recaptcha-checkbox-border{position:absolute;inset:0;border:2px solid #c1c1c1;border-radius:2px;background:#fff;transition:border-color .18s ease, background .18s ease}
+    .recaptcha-checkbox:hover .recaptcha-checkbox-border{border-color:#a8a8a8}
+    .aso-arrow{position:absolute;inset:0;display:none;align-items:center;justify-content:center}.aso-arrow svg{width:20px;height:20px;overflow:visible}
+    .aso-arrow-line{stroke:var(--primary);stroke-width:2.8;fill:none;stroke-dasharray:8 6;animation:asoFlow .9s linear infinite}
+    .aso-arrow-head{fill:none;stroke:var(--primary);stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round;animation:asoMove .9s ease-in-out infinite}
+    @keyframes asoFlow{from{stroke-dashoffset:0}to{stroke-dashoffset:-20}} @keyframes asoMove{0%,100%{transform:translateX(0)}50%{transform:translateX(2px)}}
+    .recaptcha-checkbox-checkmark{position:absolute;left:4px;top:3px;width:18px;height:12px;border-left:3px solid var(--success);border-bottom:3px solid var(--success);transform:rotate(-45deg) scale(.6);opacity:0;transition:transform .18s ease, opacity .18s ease}
+    .recaptcha-checkbox.loading .aso-arrow{display:flex}.recaptcha-checkbox.loading .recaptcha-checkbox-border{border-color:#b8c7e6;background:#f8fbff}
+    .recaptcha-checkbox.done .recaptcha-checkbox-checkmark{opacity:1;transform:rotate(-45deg) scale(1)} .recaptcha-checkbox.done .recaptcha-checkbox-border{border-color:#b7d8c1;background:#fff}
+    .rc-anchor-checkbox-label{font-size:14px;color:#222;padding-left:6px;user-select:none}
+    .rc-anchor-normal-footer{display:flex;justify-content:space-between;align-items:center;min-height:60px;padding:10px 14px 10px 12px;background:#f9f9f9;border-top:1px solid #eee}
+    .rc-anchor-logo-portrait{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:84px}
+    .rc-anchor-logo-img{width:56px;height:56px;border-radius:12px;background:#fff;padding:4px;object-fit:contain;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+    .rc-anchor-logo-text{margin-top:4px;font-size:13px;line-height:1;color:#555;font-weight:700}
+    .rc-anchor-pt{text-align:right;font-size:10px;line-height:1.5;color:#555}
+    .canvas-wrap{margin-top:14px;border-radius:14px;overflow:hidden;border:1px solid #dfe6ef;background:#081321} canvas{display:block;width:100%;height:120px}
+    .captcha-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.help-text{margin-top:10px;color:var(--muted);font-size:.88rem;line-height:1.6}.footer-note{margin-top:14px;color:var(--muted);font-size:.9rem;line-height:1.7}
+    .fixed-badge{position:fixed;right:14px;bottom:14px;display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #dbe2ea;border-radius:10px;padding:8px 12px;box-shadow:0 8px 24px rgba(0,0,0,.08);font-size:12px;color:#4f5d6d;z-index:50}
+    .fixed-badge img{width:20px;height:20px;border-radius:6px;background:#fff;object-fit:contain}
+    @media (max-width:1100px){.app{grid-template-columns:1fr}.sidebar{position:relative;height:auto}.grid-4,.grid-2,.auth-card{grid-template-columns:1fr}}
+    @media (max-width:760px){.auth-left,.auth-right{padding:24px}.main{padding:18px}.topbar h1{font-size:1.65rem}}
+  </style>
+</head>
+<body>
+  <div id="authScreen" class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-left">
+        <img class="logo" src="https://image2url.com/r2/default/images/1773786590683-43751e9f-a3b2-4976-9c41-0716ce808e88.png" alt="Logo Aso" />
+        <h1>Aso Protection Platform</h1>
+        <p>
+          Crie sua conta, ganhe 10 dias de Pro, gere suas keys e acompanhe
+          requisições, bloqueios e score de risco em um painel profissional.
+        </p>
+        <div class="hero-points">
+          <div class="hero-point">Trial Pro grátis por 10 dias.</div>
+          <div class="hero-point">Geração de siteKey e secretKey por projeto.</div>
+          <div class="hero-point">Painel com requisições, bloqueios e sessões suspeitas.</div>
+        </div>
+      </div>
+      <div class="auth-right">
+        <div class="tabs">
+          <button class="tab active" id="loginTab">Entrar</button>
+          <button class="tab" id="registerTab">Criar conta</button>
+        </div>
+        <div id="loginFormWrap" class="stack">
+          <input id="loginEmail" type="email" placeholder="Seu e-mail" />
+          <input id="loginPassword" type="password" placeholder="Sua senha" />
+          <button class="btn btn-primary" id="loginBtn">Entrar</button>
+          <div class="status" id="loginStatus"></div>
+        </div>
+        <div id="registerFormWrap" class="stack hidden">
+          <input id="registerEmail" type="email" placeholder="Seu e-mail" />
+          <input id="registerPassword" type="password" placeholder="Crie uma senha (mín. 8)" />
+          <button class="btn btn-primary" id="registerBtn">Criar conta e ativar 10 dias Pro</button>
+          <div class="status" id="registerStatus"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="appScreen" class="app hidden">
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="https://image2url.com/r2/default/images/1773786590683-43751e9f-a3b2-4976-9c41-0716ce808e88.png" alt="Logo Aso" />
+        <div>
+          <strong>Aso Protection</strong>
+          <span>Security Platform</span>
+        </div>
+      </div>
+      <nav class="nav">
+        <a class="active"><span class="nav-dot"></span> Dashboard</a>
+        <a><span class="nav-dot"></span> Gerar key</a>
+        <a><span class="nav-dot"></span> Requisições</a>
+        <a><span class="nav-dot"></span> IPs bloqueados</a>
+        <a><span class="nav-dot"></span> Como protege</a>
+      </nav>
+      <div class="sidebar-box">
+        <h4>Status do projeto</h4>
+        <p>Esta é a demo visual completa. Para dados reais, conecte o front-end às APIs do servidor.</p>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <h1>Painel Aso Pro</h1>
+          <p id="welcomeText">Bem-vindo.</p>
+        </div>
+        <div class="top-actions">
+          <span class="badge badge-info" id="planBadge">Trial Pro ativo</span>
+          <button class="btn btn-outline" id="logoutBtn">Sair</button>
+        </div>
+      </div>
+
+      <section class="grid grid-4">
+        <div class="card card-pad metric">
+          <small>Requisições totais</small>
+          <strong id="reqCount">0</strong>
+          <span>Somatório das requisições atribuídas às suas keys.</span>
+          <div class="status-line"><span class="dot info"></span> atualização automática</div>
+        </div>
+        <div class="card card-pad metric">
+          <small>IPs bloqueados</small>
+          <strong id="blockedCount">0</strong>
+          <span>Bloqueios por repetição, score ruim ou abuso.</span>
+          <div class="status-line"><span class="dot danger"></span> resposta adaptativa</div>
+        </div>
+        <div class="card card-pad metric">
+          <small>Score médio</small>
+          <strong id="avgScore">0.50</strong>
+          <span>Confiança média das sessões observadas.</span>
+          <div class="status-line"><span class="dot success"></span> sessão humana favorecida</div>
+        </div>
+        <div class="card card-pad metric">
+          <small>Suas keys</small>
+          <strong id="keyCount">0</strong>
+          <span>Projetos protegidos no seu painel.</span>
+          <div class="status-line"><span class="dot warning"></span> crie e instale agora</div>
+        </div>
+      </section>
+
+      <div style="height:18px"></div>
+
+      <section class="grid grid-2">
+        <div class="card card-pad">
+          <h2 class="section-title">Gerar key Pro</h2>
+          <p class="muted">Informe o projeto e o domínio. A Aso exige verificação antes de liberar as chaves.</p>
+          <div class="stack">
+            <input id="projectName" placeholder="Nome do projeto" />
+            <input id="projectDomain" placeholder="Domínio principal (ex: meusite.com)" />
+            <button class="btn btn-primary" id="openCaptchaBtn">Validar e gerar key</button>
+            <div class="status" id="keyStatus"></div>
+          </div>
+          <div class="keys-box hidden" id="keysBox">
+            <div class="key-field">
+              <label>Site Key (HTML/site)</label>
+              <div class="key-value" id="siteKeyValue"></div>
+            </div>
+            <div class="key-field">
+              <label>Secret Key (Java/backend)</label>
+              <div class="key-value" id="secretKeyValue"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-pad">
+          <h2 class="section-title">Instalação</h2>
+          <p class="muted">Use a <strong>siteKey</strong> no widget do site e a <strong>secretKey</strong> no backend Java.</p>
+          <div class="install-box" id="installSnippet"></div>
+          <div style="height:12px"></div>
+          <div class="install-box" id="javaSnippet"></div>
+        </div>
+      </section>
+
+      <div style="height:18px"></div>
+
+      <section class="grid grid-2">
+        <div class="card card-pad">
+          <h2 class="section-title">Como a Aso protege</h2>
+          <div class="feature-list">
+            <div class="feature-row"><span>WAF avançado</span><span class="badge badge-info">Regras / bloqueio</span></div>
+            <div class="feature-row"><span>Anti-DDoS</span><span class="badge badge-info">Mitigação contínua</span></div>
+            <div class="feature-row"><span>Bot Management</span><span class="badge badge-info">Score / desafio / bloqueio</span></div>
+            <div class="feature-row"><span>Browser Integrity</span><span class="badge badge-success">Headers / sinais</span></div>
+            <div class="feature-row"><span>Rate Limiting</span><span class="badge badge-success">IP / endpoint</span></div>
+            <div class="feature-row"><span>Analytics</span><span class="badge badge-success">Requisições / score / bloqueios</span></div>
+          </div>
+          <p class="footer-note">
+            Nesta demo, isso aparece como painel e lógica simulada. Em produção, a parte efetiva depende do backend e do edge.
+          </p>
+        </div>
+
+        <div class="card card-pad">
+          <h2 class="section-title">Status das suas keys</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Projeto</th>
+                <th>Domínio</th>
+                <th>Req.</th>
+                <th>Bloq.</th>
+              </tr>
+            </thead>
+            <tbody id="keysTable"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <div style="height:18px"></div>
+
+      <section class="grid grid-2">
+        <div class="card card-pad">
+          <h2 class="section-title">Requisições recentes</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Hora</th>
+                <th>IP</th>
+                <th>Rota</th>
+                <th>Decisão</th>
+              </tr>
+            </thead>
+            <tbody id="requestsTable"></tbody>
+          </table>
+        </div>
+
+        <div class="card card-pad">
+          <h2 class="section-title">IPs bloqueados</h2>
+          <div class="list" id="blockedList"></div>
+        </div>
+      </section>
+
+      <div style="height:18px"></div>
+
+      <section class="card card-pad">
+        <h2 class="section-title">Sessões suspeitas</h2>
+        <div class="list" id="suspectList"></div>
+      </section>
+    </main>
+  </div>
+
+  <div id="captchaOverlay" class="overlay">
+    <div class="captcha-modal">
+      <div class="captcha-head">
+        <strong>Verificação de segurança</strong>
+        <button class="btn btn-outline" id="closeCaptchaBtn">Fechar</button>
+      </div>
+      <div class="captcha-body">
+        <div class="rc-anchor">
+          <div class="rc-anchor-content">
+            <div class="rc-inline-block">
+              <div class="rc-anchor-center-container">
+                <div class="rc-anchor-center-item rc-anchor-checkbox-holder">
+                  <span class="recaptcha-checkbox" id="recaptcha-anchor" tabindex="0" role="checkbox" aria-checked="false">
+                    <div class="recaptcha-checkbox-border"></div>
+                    <div class="aso-arrow">
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path class="aso-arrow-line" d="M4 12h11"></path>
+                        <path class="aso-arrow-head" d="M12.5 7.5L17 12l-4.5 4.5"></path>
+                      </svg>
+                    </div>
+                    <div class="recaptcha-checkbox-checkmark"></div>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="rc-inline-block">
+              <div class="rc-anchor-center-container">
+                <label class="rc-anchor-center-item rc-anchor-checkbox-label">Não sou um robô</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="rc-anchor-normal-footer">
+            <div class="rc-anchor-logo-portrait">
+              <img class="rc-anchor-logo-img" src="https://image2url.com/r2/default/images/1773786590683-43751e9f-a3b2-4976-9c41-0716ce808e88.png" alt="Logo Aso" />
+              <div class="rc-anchor-logo-text">Aso CAPTCHA</div>
+            </div>
+            <div class="rc-anchor-pt">Privacidade - Termos</div>
+          </div>
+        </div>
+
+        <div class="canvas-wrap hidden" id="challengeWrap">
+          <canvas id="captchaCanvas" width="820" height="220"></canvas>
+        </div>
+
+        <div class="help-text" id="challengeText">Clique no checkbox para iniciar.</div>
+
+        <div class="captcha-actions hidden" id="challengeActions">
+          <input id="challengeInput" placeholder="Digite a resposta" />
+          <button class="btn btn-outline" id="speakBtn">Ouvir</button>
+          <button class="btn btn-primary" id="verifyChallengeBtn">Verificar</button>
+        </div>
+
+        <div class="status" id="captchaStatus"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fixed-badge">
+    <img src="https://image2url.com/r2/default/images/1773786590683-43751e9f-a3b2-4976-9c41-0716ce808e88.png" alt="Logo Aso" />
+    <span>Protegido por Aso</span>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
